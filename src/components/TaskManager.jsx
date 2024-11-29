@@ -5,7 +5,7 @@ function TaskManager() {
   const [taskInput, setTaskInput] = useState("");
 
   const addTask = () => {
-    if (taskInput.trim()) {
+    if (taskInput.trim() !== "") {
       setTasks([
         ...tasks,
         { id: Date.now(), text: taskInput, completed: false },
@@ -22,42 +22,55 @@ function TaskManager() {
     );
   };
 
+  const removeTask = (id) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+
   return (
-    <div className="p-4 max-w-md mx-auto bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4">Task Manager</h1>
-      <div className="flex mb-4">
+    <div className="p-6 max-w-lg mx-auto bg-white rounded shadow-md">
+      <h1 className="text-3xl font-bold text-center mb-6">Task Manager</h1>
+      <div className="flex gap-2 mb-4">
         <input
           type="text"
           value={taskInput}
           onChange={(e) => setTaskInput(e.target.value)}
-          placeholder="Add a new task"
-          className="flex-1 px-4 py-2 border rounded-l-md focus:outline-none"
+          className="flex-grow p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter a task"
         />
         <button
           onClick={addTask}
-          className="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Add
         </button>
       </div>
-      <ul>
-        {tasks.map((task) => (
-          <li
-            key={task.id}
-            className={`flex items-center justify-between p-2 mb-2 border rounded ${
-              task.completed ? "line-through text-gray-500" : ""
-            }`}
-          >
-            <span>{task.text}</span>
-            <button
-              onClick={() => toggleTaskCompletion(task.id)}
-              className="text-sm text-blue-500 hover:underline"
+      {tasks.length === 0 ? (
+        <p className="text-gray-500 text-center">No tasks added yet!</p>
+      ) : (
+        <ul className="space-y-2">
+          {tasks.map((task) => (
+            <li
+              key={task.id}
+              className={`p-3 flex justify-between items-center border rounded ${
+                task.completed ? "bg-green-100 line-through" : "bg-gray-100"
+              }`}
             >
-              {task.completed ? "Undo" : "Complete"}
-            </button>
-          </li>
-        ))}
-      </ul>
+              <span
+                onClick={() => toggleTaskCompletion(task.id)}
+                className="cursor-pointer"
+              >
+                {task.text}
+              </span>
+              <button
+                onClick={() => removeTask(task.id)}
+                className="text-red-500 hover:text-red-700"
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
