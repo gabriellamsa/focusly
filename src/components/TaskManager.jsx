@@ -41,51 +41,52 @@ function TaskManager() {
   const completedTasksCount = tasks.filter((task) => task.completed).length;
 
   return (
-    <div className="p-6 max-w-lg mx-auto bg-white rounded shadow-md">
-      <h1 className="text-3xl font-bold text-center mb-6">Task Manager</h1>
+    <div className="p-6 max-w-lg mx-auto bg-white shadow-md rounded-lg">
+      <h1 className="text-3xl font-semibold text-gray-800 text-center mb-6">
+        Task Manager
+      </h1>
       <div className="flex gap-2 mb-4">
         <input
           type="text"
           value={taskInput}
           onChange={(e) => setTaskInput(e.target.value)}
-          className="flex-grow p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter a task"
+          className="flex-grow p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Add a new task..."
         />
         <button
           onClick={addTask}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
         >
           Add
         </button>
       </div>
 
       <div className="flex justify-between items-center mb-4">
-        {/* filter buttons */}
         <div className="flex gap-2">
           {["all", "active", "completed"].map((type) => (
             <button
               key={type}
               onClick={() => setFilter(type)}
-              className={`px-4 py-2 rounded ${
-                filter === type ? "bg-blue-500 text-white" : "bg-gray-200"
+              className={`px-4 py-2 rounded text-sm font-medium transition ${
+                filter === type
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </button>
           ))}
         </div>
-        {/* clear completed button */}
         {completedTasksCount > 0 && (
           <button
             onClick={clearCompletedTasks}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            className="px-4 py-2 text-sm font-medium text-red-500 border border-red-500 rounded hover:bg-red-100 transition"
           >
             Clear Completed ({completedTasksCount})
           </button>
         )}
       </div>
 
-      {/* tasks list */}
       {filteredTasks.length === 0 ? (
         <p className="text-gray-500 text-center">
           {filter === "all"
@@ -99,19 +100,25 @@ function TaskManager() {
           {filteredTasks.map((task) => (
             <li
               key={task.id}
-              className={`p-3 flex justify-between items-center border rounded ${
-                task.completed ? "bg-green-100 line-through" : "bg-gray-100"
+              className={`flex justify-between items-center p-3 rounded border ${
+                task.completed
+                  ? "bg-green-50 border-green-200"
+                  : "bg-gray-50 border-gray-200"
               }`}
             >
               <span
                 onClick={() => toggleTaskCompletion(task.id)}
-                className="cursor-pointer"
+                className={`cursor-pointer transition ${
+                  task.completed
+                    ? "text-green-600 line-through"
+                    : "text-gray-800"
+                }`}
               >
                 {task.text}
               </span>
               <button
                 onClick={() => removeTask(task.id)}
-                className="text-red-500 hover:text-red-700"
+                className="text-red-500 hover:text-red-700 transition"
               >
                 Remove
               </button>
@@ -120,7 +127,6 @@ function TaskManager() {
         </ul>
       )}
 
-      {/* task count */}
       <div className="mt-4 text-center text-gray-600">
         <p>
           Total Tasks: {tasks.length} | Completed: {completedTasksCount}
