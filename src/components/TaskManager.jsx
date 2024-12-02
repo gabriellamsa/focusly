@@ -41,8 +41,8 @@ function TaskManager() {
   const completedTasksCount = tasks.filter((task) => task.completed).length;
 
   return (
-    <div className="p-6 max-w-lg mx-auto bg-white shadow-md rounded-lg">
-      <h1 className="text-3xl font-semibold text-gray-800 text-center mb-6">
+    <div className="p-6 max-w-lg mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg transition-all">
+      <h1 className="text-3xl font-semibold text-gray-800 dark:text-white text-center mb-6">
         Task Manager
       </h1>
       <div className="flex gap-2 mb-4">
@@ -50,7 +50,7 @@ function TaskManager() {
           type="text"
           value={taskInput}
           onChange={(e) => setTaskInput(e.target.value)}
-          className="flex-grow p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="flex-grow p-3 border border-gray-300 dark:border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           placeholder="Add a new task..."
         />
         <button
@@ -70,7 +70,7 @@ function TaskManager() {
               className={`px-4 py-2 rounded text-sm font-medium transition ${
                 filter === type
                   ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-white hover:bg-gray-300"
               }`}
             >
               {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -80,7 +80,7 @@ function TaskManager() {
         {completedTasksCount > 0 && (
           <button
             onClick={clearCompletedTasks}
-            className="px-4 py-2 text-sm font-medium text-red-500 border border-red-500 rounded hover:bg-red-100 transition"
+            className="px-4 py-2 text-sm font-medium text-red-500 border border-red-500 rounded hover:bg-red-100 dark:hover:bg-red-700 transition"
           >
             Clear Completed ({completedTasksCount})
           </button>
@@ -88,7 +88,7 @@ function TaskManager() {
       </div>
 
       {filteredTasks.length === 0 ? (
-        <p className="text-gray-500 text-center">
+        <p className="text-gray-500 text-center dark:text-gray-400">
           {filter === "all"
             ? "No tasks available. Start adding some!"
             : filter === "active"
@@ -102,16 +102,16 @@ function TaskManager() {
               key={task.id}
               className={`flex justify-between items-center p-3 rounded border ${
                 task.completed
-                  ? "bg-green-50 border-green-200"
-                  : "bg-gray-50 border-gray-200"
+                  ? "bg-green-50 border-green-200 dark:bg-green-700 dark:border-green-500"
+                  : "bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600"
               }`}
             >
               <span
                 onClick={() => toggleTaskCompletion(task.id)}
                 className={`cursor-pointer transition ${
                   task.completed
-                    ? "text-green-600 line-through"
-                    : "text-gray-800"
+                    ? "text-green-600 dark:text-green-400 line-through"
+                    : "text-gray-800 dark:text-white"
                 }`}
               >
                 {task.text}
@@ -127,7 +127,7 @@ function TaskManager() {
         </ul>
       )}
 
-      <div className="mt-4 text-center text-gray-600">
+      <div className="mt-4 text-center text-gray-600 dark:text-gray-400">
         <p>
           Total Tasks: {tasks.length} | Completed: {completedTasksCount}
         </p>
