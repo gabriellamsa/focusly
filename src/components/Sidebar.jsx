@@ -1,13 +1,32 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import {
+  FiHome,
+  FiCheckSquare,
+  FiFileText,
+  FiMap,
+  FiBriefcase,
+  FiBarChart2,
+  FiCalendar,
+} from "react-icons/fi";
 
 function Sidebar() {
   const menuItems = [
-    { name: "New Page", icon: "📄", path: "/" },
-    { name: "Travel Planning", icon: "✈️", path: "/travel-planning" },
-    { name: "Candidate Tracking", icon: "💼", path: "/candidate-tracking" },
-    { name: "Project Planning", icon: "📊", path: "/project-planning" },
-    { name: "Weekly Tasks List", icon: "📅", path: "/weekly-tasks" },
+    { name: "Home", icon: <FiHome />, path: "/" },
+    { name: "Task Manager", icon: <FiCheckSquare />, path: "/task-manager" },
+    { name: "New Page", icon: <FiFileText />, path: "/new-page" },
+    { name: "Travel Planning", icon: <FiMap />, path: "/travel-planning" },
+    {
+      name: "Candidate Tracking",
+      icon: <FiBriefcase />,
+      path: "/candidate-tracking",
+    },
+    {
+      name: "Project Planning",
+      icon: <FiBarChart2 />,
+      path: "/project-planning",
+    },
+    { name: "Weekly Tasks List", icon: <FiCalendar />, path: "/weekly-tasks" },
   ];
 
   return (
@@ -19,7 +38,7 @@ function Sidebar() {
             key={index}
             className="flex items-center space-x-3 py-2 hover:bg-gray-700 rounded"
           >
-            <span>{item.icon}</span>
+            <span className="text-2xl">{item.icon}</span>
             <Link to={item.path} className="flex-1">
               {item.name}
             </Link>
