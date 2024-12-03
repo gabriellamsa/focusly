@@ -1,10 +1,13 @@
+import React from "react";
+import { Link } from "react-router-dom";
+
 function Sidebar() {
   const menuItems = [
-    { name: "New Page", icon: "📄" },
-    { name: "Travel Planning", icon: "✈️" },
-    { name: "Candidate Tracking", icon: "💼" },
-    { name: "Project Planning", icon: "📊" },
-    { name: "Weekly Tasks List", icon: "📅" },
+    { name: "New Page", icon: "📄", path: "/" },
+    { name: "Travel Planning", icon: "✈️", path: "/travel-planning" },
+    { name: "Candidate Tracking", icon: "💼", path: "/candidate-tracking" },
+    { name: "Project Planning", icon: "📊", path: "/project-planning" },
+    { name: "Weekly Tasks List", icon: "📅", path: "/weekly-tasks" },
   ];
 
   return (
@@ -17,7 +20,9 @@ function Sidebar() {
             className="flex items-center space-x-3 py-2 hover:bg-gray-700 rounded"
           >
             <span>{item.icon}</span>
-            <span>{item.name}</span>
+            <Link to={item.path} className="flex-1">
+              {item.name}
+            </Link>
           </li>
         ))}
       </ul>

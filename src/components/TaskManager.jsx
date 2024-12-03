@@ -64,12 +64,7 @@ function TaskManager() {
               >
                 {task.text}
               </div>
-              <button
-                onClick={() => removeTask(task.id)}
-                className="text-red-500 hover:text-red-300 transition"
-              >
-                🗑️
-              </button>
+              <button onClick={() => removeTask(task.id)}>🗑️</button>
             </div>
           ))
         )}
