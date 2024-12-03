@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { FiSend, FiPaperclip } from "react-icons/fi";
+import { FiSend, FiPaperclip, FiEdit, FiTrash2 } from "react-icons/fi";
 
 function NewPage() {
   const [text, setText] = useState("");
   const [attachments, setAttachments] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [editMessageId, setEditMessageId] = useState(null);
 
   const handleTextChange = (e) => {
     setText(e.target.value);
@@ -16,10 +17,18 @@ function NewPage() {
   };
 
   const handleSendMessage = () => {
-    if (text.trim() === "" && attachments.length === 0) return; // block empty send
+    if (text.trim() === "" && attachments.length === 0) return;
 
-    // add messages and attachments to history
-    setMessages((prev) => [...prev, { text, attachments, id: Date.now() }]);
+    if (editMessageId !== null) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === editMessageId ? { ...msg, text, attachments } : msg
+        )
+      );
+      setEditMessageId(null);
+    } else {
+      setMessages((prev) => [...prev, { id: Date.now(), text, attachments }]);
+    }
 
     // clean editor and attachments
     setText("");
@@ -29,6 +38,20 @@ function NewPage() {
   const handleCancel = () => {
     setText("");
     setAttachments([]);
+    setEditMessageId(null);
+  };
+
+  const handleEditMessage = (id) => {
+    const message = messages.find((msg) => msg.id === id);
+    if (message) {
+      setText(message.text);
+      setAttachments(message.attachments);
+      setEditMessageId(id); // edit text
+    }
+  };
+
+  const handleRemoveMessage = (id) => {
+    setMessages((prev) => prev.filter((msg) => msg.id !== id));
   };
 
   const renderAttachments = () => {
@@ -53,7 +76,7 @@ function NewPage() {
     return messages.map((msg) => (
       <div
         key={msg.id}
-        className="p-4 bg-gray-900 text-gray-200 rounded-lg mb-4 border border-gray-700"
+        className="relative p-4 bg-gray-900 text-gray-200 rounded-lg mb-4 border border-gray-700 group"
       >
         <p className="mb-2">{msg.text || "No text"}</p>
         {msg.attachments.length > 0 && (
@@ -75,6 +98,22 @@ function NewPage() {
             ))}
           </div>
         )}
+
+        {/* edit and remove icons */}
+        <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={() => handleEditMessage(msg.id)}
+            className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
+          >
+            <FiEdit />
+          </button>
+          <button
+            onClick={() => handleRemoveMessage(msg.id)}
+            className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
+          >
+            <FiTrash2 />
+          </button>
+        </div>
       </div>
     ));
   };
@@ -118,7 +157,7 @@ function NewPage() {
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center"
             >
               <FiSend className="mr-2" />
-              Send
+              {editMessageId ? "Update" : "Send"}
             </button>
           </div>
         </div>
