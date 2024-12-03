@@ -11,6 +11,13 @@ function NewPage() {
     setText(e.target.value);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     setAttachments((prev) => [...prev, ...files]);
@@ -41,17 +48,21 @@ function NewPage() {
     setEditMessageId(null);
   };
 
-  const handleEditMessage = (id) => {
-    const message = messages.find((msg) => msg.id === id);
-    if (message) {
-      setText(message.text);
-      setAttachments(message.attachments);
-      setEditMessageId(id); // edit text
-    }
-  };
-
   const handleRemoveMessage = (id) => {
     setMessages((prev) => prev.filter((msg) => msg.id !== id));
+  };
+
+  const handleDirectEdit = (id, newText) => {
+    setMessages((prev) =>
+      prev.map((msg) => (msg.id === id ? { ...msg, text: newText } : msg))
+    );
+  };
+
+  const autoResize = (textarea) => {
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
   };
 
   const renderAttachments = () => {
@@ -78,9 +89,18 @@ function NewPage() {
         key={msg.id}
         className="relative p-4 bg-gray-900 text-gray-200 rounded-lg mb-4 border border-gray-700 group"
       >
-        <p className="mb-2">{msg.text || "No text"}</p>
+        <textarea
+          value={msg.text}
+          onChange={(e) => handleDirectEdit(msg.id, e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) e.preventDefault();
+          }}
+          ref={(textarea) => autoResize(textarea)}
+          className="w-full bg-transparent text-gray-200 border-none focus:outline-none resize-none overflow-hidden"
+        ></textarea>
+
         {msg.attachments.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
             {msg.attachments.map((file, index) => (
               <div key={index} className="relative group">
                 {file.type.startsWith("image/") ? (
@@ -102,7 +122,7 @@ function NewPage() {
         {/* edit and remove icons */}
         <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            onClick={() => handleEditMessage(msg.id)}
+            onClick={() => setEditMessageId(msg.id)}
             className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
           >
             <FiEdit />
@@ -127,6 +147,7 @@ function NewPage() {
         <textarea
           value={text}
           onChange={handleTextChange}
+          onKeyDown={handleKeyDown}
           placeholder="Type your notes here..."
           className="w-full h-32 p-2 bg-transparent text-gray-200 border-none focus:outline-none resize-none"
         ></textarea>
