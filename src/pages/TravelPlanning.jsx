@@ -10,8 +10,14 @@ import {
   FiHome,
 } from "react-icons/fi";
 
+const sectionIcons = {
+  clothes: <FiList className="text-blue-400" />,
+  personalCare: <FiAirplay className="text-green-400" />,
+  electronics: <FiHome className="text-yellow-400" />,
+  travelDocs: <FiClipboard className="text-red-400" />,
+};
+
 function TravelPlanning() {
-  // states for expandable lists
   const [openSections, setOpenSections] = useState({
     clothes: false,
     personalCare: false,
@@ -21,10 +27,10 @@ function TravelPlanning() {
 
   // initial list data
   const initialLists = {
-    clothes: ["Shirts", "Pants", "Shoes"],
-    personalCare: ["Toothbrush", "Shampoo", "Towel"],
-    electronics: ["Charger", "Phone", "Headphones"],
-    travelDocs: ["Passport", "Tickets", "Visa"],
+    clothes: [],
+    personalCare: [],
+    electronics: [],
+    travelDocs: [],
   };
 
   const [lists, setLists] = useState(initialLists);
@@ -68,79 +74,70 @@ function TravelPlanning() {
     setItinerary((prev) => prev.filter((row) => row.id !== id));
   };
 
-  return (
-    <div className="p-6 bg-gray-800 text-white min-h-screen">
-      {/* expandable lists section */}
-      <h1 className="text-3xl font-bold mb-6 text-blue-400">Packing List</h1>
-      {Object.keys(lists).map((sectionKey) => (
-        <div key={sectionKey} className="mb-6">
-          <div
-            onClick={() => toggleSection(sectionKey)}
-            className="flex justify-between items-center cursor-pointer bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition-all duration-300"
-          >
-            <div className="flex items-center space-x-2">
-              {sectionKey === "clothes" && <FiList className="text-blue-400" />}
-              {sectionKey === "personalCare" && (
-                <FiAirplay className="text-green-400" />
-              )}
-              {sectionKey === "electronics" && (
-                <FiHome className="text-yellow-400" />
-              )}
-              {sectionKey === "travelDocs" && (
-                <FiClipboard className="text-red-400" />
-              )}
-              <h2 className="text-lg font-semibold capitalize">
-                {sectionKey
-                  .replace(/([A-Z])/g, " $1")
-                  .replace(/^./, (str) => str.toUpperCase())}
-              </h2>
-            </div>
-            {openSections[sectionKey] ? (
-              <FiChevronDown className="text-xl text-gray-300" />
-            ) : (
-              <FiChevronRight className="text-xl text-gray-300" />
-            )}
+  // function to render a section of the list
+  const renderSection = (sectionKey) => {
+    return (
+      <div key={sectionKey} className="mb-6">
+        <div
+          onClick={() => toggleSection(sectionKey)}
+          className="flex justify-between items-center cursor-pointer bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition-all duration-300"
+        >
+          <div className="flex items-center space-x-2">
+            {sectionIcons[sectionKey]}
+            <h2 className="text-lg font-semibold capitalize">
+              {sectionKey
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())}
+            </h2>
           </div>
-
-          {/* list content */}
-          {openSections[sectionKey] && (
-            <div className="p-4 bg-gray-900 rounded-lg space-y-2 mt-2">
-              {lists[sectionKey].map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition-all duration-300"
-                >
-                  <span>{item}</span>
-                  <button
-                    onClick={() => removeItem(sectionKey, index)}
-                    className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
-                  >
-                    <FiTrash2 />
-                  </button>
-                </div>
-              ))}
-              <div className="flex items-center space-x-2 mt-2">
-                <input
-                  type="text"
-                  value={newItem}
-                  onChange={(e) => setNewItem(e.target.value)}
-                  className="flex-1 p-2 bg-gray-800 border border-gray-600 rounded-lg text-white"
-                  placeholder="Add new item"
-                />
-                <button
-                  onClick={() => addItem(sectionKey)}
-                  className="p-2 bg-blue-500 rounded-lg hover:bg-blue-600"
-                >
-                  <FiPlus className="text-white" />
-                </button>
-              </div>
-            </div>
+          {openSections[sectionKey] ? (
+            <FiChevronDown className="text-xl text-gray-300" />
+          ) : (
+            <FiChevronRight className="text-xl text-gray-300" />
           )}
         </div>
-      ))}
 
-      {/* itinerary section */}
-      <h1 className="text-3xl font-bold mt-10 mb-6 text-blue-400">Itinerary</h1>
+        {/* list content */}
+        {openSections[sectionKey] && (
+          <div className="p-4 bg-gray-900 rounded-lg space-y-2 mt-2">
+            {lists[sectionKey].map((item, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition-all duration-300"
+              >
+                <span>{item}</span>
+                <button
+                  onClick={() => removeItem(sectionKey, index)}
+                  className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
+                >
+                  <FiTrash2 />
+                </button>
+              </div>
+            ))}
+            <div className="flex items-center space-x-2 mt-2">
+              <input
+                type="text"
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                className="flex-1 p-2 bg-gray-800 border border-gray-600 rounded-lg text-white"
+                placeholder="Add new item"
+              />
+              <button
+                onClick={() => addItem(sectionKey)}
+                className="p-2 bg-blue-500 rounded-lg hover:bg-blue-600"
+              >
+                <FiPlus className="text-white" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // function to render the itinerary
+  const renderItinerary = () => {
+    return (
       <table className="w-full table-auto bg-gray-700 text-white rounded-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-600">
@@ -159,7 +156,7 @@ function TravelPlanning() {
               <td className="p-4">
                 <button
                   onClick={() => removeItineraryRow(row.id)}
-                  className="text-red-500 hover:text-red-700"
+                  className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
                 >
                   <FiTrash2 />
                 </button>
@@ -168,8 +165,15 @@ function TravelPlanning() {
           ))}
         </tbody>
       </table>
+    );
+  };
 
-      {/* add new row to itinerary */}
+  return (
+    <div className="p-6 bg-gray-800 text-white min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-blue-400">Packing List</h1>
+      {Object.keys(lists).map(renderSection)}{" "}
+      <h1 className="text-3xl font-bold mt-10 mb-6 text-blue-400">Itinerary</h1>
+      {renderItinerary()}
       <div className="flex items-center space-x-4 mt-6">
         <input
           type="text"
