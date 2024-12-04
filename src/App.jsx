@@ -3,6 +3,7 @@ import Sidebar from "./components/Sidebar";
 import HomePage from "./pages/HomePage";
 import TaskManager from "./components/TaskManager";
 import NewPage from "./pages/NewPage";
+import TravelPlanning from "./pages/TravelPlanning";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/task-manager" element={<TaskManager />} />
             <Route path="/new-page" element={<NewPage />} />
+            <Route path="/travel-planning" element={<TravelPlanning />} />
           </Routes>
         </div>
       </div>

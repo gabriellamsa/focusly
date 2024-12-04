@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FiTrash2 } from "react-icons/fi";
 
 function TaskManager() {
   const [tasks, setTasks] = useState([]);
@@ -22,13 +23,13 @@ function TaskManager() {
     );
   };
 
-  const removeTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const handleRemoveTask = (id) => {
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
   return (
     <div className="max-w-4xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
-      <h1 className="text-4xl font-semibold text-center text-white mb-6">
+      <h1 className="text-3xl font-bold mt-10 mb-6 text-blue-400">
         Task Manager
       </h1>
 
@@ -39,7 +40,7 @@ function TaskManager() {
           value={taskInput}
           onChange={(e) => setTaskInput(e.target.value)}
           onKeyDown={addTask}
-          className="w-full p-4 text-xl bg-gray-900 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-4 text-xl text-white bg-gray-900 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Type a new task and hit Enter..."
         />
       </div>
@@ -64,7 +65,12 @@ function TaskManager() {
               >
                 {task.text}
               </div>
-              <button onClick={() => removeTask(task.id)}>🗑️</button>
+              <button
+                onClick={() => handleRemoveTask(task.id)}
+                className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
+              >
+                <FiTrash2 />
+              </button>
             </div>
           ))
         )}

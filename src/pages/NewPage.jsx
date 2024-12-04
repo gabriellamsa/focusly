@@ -37,7 +37,6 @@ function NewPage() {
       setMessages((prev) => [...prev, { id: Date.now(), text, attachments }]);
     }
 
-    // clean editor and attachments
     setText("");
     setAttachments([]);
   };
@@ -139,8 +138,8 @@ function NewPage() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-4xl font-bold text-white mb-4">New Page</h1>
+    <div className="p-6 bg-gray-800 text-white min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-blue-400">New Page</h1>
 
       {/* text editor */}
       <div className="bg-gray-900 p-4 rounded-lg border border-gray-700 mb-4 relative">
