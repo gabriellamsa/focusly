@@ -5,10 +5,11 @@ function TaskManager() {
   const [tasks, setTasks] = useState([]);
   const [taskInput, setTaskInput] = useState("");
 
+  // add a new task to the top of the list
   const addTask = (e) => {
     if (e.key === "Enter" && taskInput.trim() !== "") {
       const newTask = { id: Date.now(), text: taskInput, completed: false };
-      setTasks((prevTasks) => [...prevTasks, newTask]);
+      setTasks((prevTasks) => sortTasks([newTask, ...prevTasks]));
       setTaskInput("");
     }
   };
