@@ -4,10 +4,17 @@ import { FiSend, FiPaperclip, FiEdit, FiTrash2 } from "react-icons/fi";
 function NewPage() {
   const [text, setText] = useState("");
   const [attachments, setAttachments] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const savedMessages = localStorage.getItem("userMessages");
+    return savedMessages ? JSON.parse(savedMessages) : [];
+  });
   const [editMessageId, setEditMessageId] = useState(null);
 
   const textareaRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem("userMessages", JSON.stringify(messages));
+  }, [messages]);
 
   const handleTextChange = (e) => setText(e.target.value);
 
@@ -17,9 +24,7 @@ function NewPage() {
     if (editMessageId !== null) {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === editMessageId
-            ? { ...msg, text, attachments } // update message text
-            : msg
+          msg.id === editMessageId ? { ...msg, text, attachments } : msg
         )
       );
       setEditMessageId(null);
