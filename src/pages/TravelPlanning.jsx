@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FiChevronDown,
   FiChevronRight,
@@ -25,23 +25,33 @@ function TravelPlanning() {
     travelDocs: false,
   });
 
-  // initial list data
-  const initialLists = {
-    clothes: [],
-    personalCare: [],
-    electronics: [],
-    travelDocs: [],
-  };
+  const [lists, setLists] = useState(() => {
+    const savedLists = localStorage.getItem("travelLists");
+    return savedLists
+      ? JSON.parse(savedLists)
+      : {
+          clothes: [],
+          personalCare: [],
+          electronics: [],
+          travelDocs: [],
+        };
+  });
 
-  const [lists, setLists] = useState(initialLists);
   const [newItem, setNewItem] = useState("");
-
-  // itinerary table
-  const [itinerary, setItinerary] = useState([]);
-
+  const [itinerary, setItinerary] = useState(() => {
+    const savedItinerary = localStorage.getItem("travelItinerary");
+    return savedItinerary ? JSON.parse(savedItinerary) : [];
+  });
   const [newRow, setNewRow] = useState({ activity: "", date: "", notes: "" });
 
-  // function to toggle the section's expanded/collapsed state
+  useEffect(() => {
+    localStorage.setItem("travelLists", JSON.stringify(lists));
+  }, [lists]);
+
+  useEffect(() => {
+    localStorage.setItem("travelItinerary", JSON.stringify(itinerary));
+  }, [itinerary]);
+
   const toggleSection = (section) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
@@ -171,7 +181,7 @@ function TravelPlanning() {
   return (
     <div className="p-6 bg-gray-800 text-white min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-blue-400">Packing List</h1>
-      {Object.keys(lists).map(renderSection)}{" "}
+      {Object.keys(lists).map(renderSection)}
       <h1 className="text-3xl font-bold mt-10 mb-6 text-blue-400">Itinerary</h1>
       {renderItinerary()}
       <div className="flex items-center space-x-4 mt-6">
