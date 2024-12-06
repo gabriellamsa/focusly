@@ -7,34 +7,36 @@ function TaskManager() {
 
   const addTask = (e) => {
     if (e.key === "Enter" && taskInput.trim() !== "") {
-      setTasks([
-        ...tasks,
-        { id: Date.now(), text: taskInput, completed: false },
-      ]);
-      setTaskInput(""); // clear input after adding task
+      const newTask = { id: Date.now(), text: taskInput, completed: false };
+      setTasks((prevTasks) => [...prevTasks, newTask]);
+      setTaskInput("");
     }
   };
 
   const toggleTaskCompletion = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
+    const updatedTasks = tasks.map((task) =>
+      task.id === id ? { ...task, completed: !task.completed } : task
     );
+    setTasks(sortTasks(updatedTasks));
   };
 
   const handleRemoveTask = (id) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  };
+
+  // completed tasks go to the end of the list
+  const sortTasks = (tasks) => {
+    return [...tasks].sort((a, b) => a.completed - b.completed);
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
+    <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-3xl font-bold mt-10 mb-6 text-blue-400">
         Task Manager
       </h1>
 
       {/* task input */}
-      <div className="space-y-4">
+      <div className="mb-4">
         <input
           type="text"
           value={taskInput}
@@ -46,35 +48,35 @@ function TaskManager() {
       </div>
 
       {/* task list */}
-      <div className="mt-6 space-y-4">
+      <ul className="space-y-2">
         {tasks.length === 0 ? (
           <p className="text-center text-gray-500">
             No tasks yet. Start typing!
           </p>
         ) : (
           tasks.map((task) => (
-            <div
+            <li
               key={task.id}
-              className={`flex items-center justify-between p-4 bg-gray-900 border border-gray-600 rounded-lg ${
+              className={`flex items-center justify-between py-2 ${
                 task.completed ? "line-through text-gray-500" : "text-white"
               }`}
             >
-              <div
+              <span
                 onClick={() => toggleTaskCompletion(task.id)}
                 className="cursor-pointer flex-grow"
               >
                 {task.text}
-              </div>
+              </span>
               <button
                 onClick={() => handleRemoveTask(task.id)}
                 className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
               >
                 <FiTrash2 />
               </button>
-            </div>
+            </li>
           ))
         )}
-      </div>
+      </ul>
     </div>
   );
 }
