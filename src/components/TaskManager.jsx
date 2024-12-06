@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiTrash2 } from "react-icons/fi";
 
 function TaskManager() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
   const [taskInput, setTaskInput] = useState("");
 
-  // add a new task to the top of the list
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
   const addTask = (e) => {
     if (e.key === "Enter" && taskInput.trim() !== "") {
       const newTask = { id: Date.now(), text: taskInput, completed: false };
