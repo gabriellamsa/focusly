@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FiSend, FiPaperclip, FiEdit, FiTrash2 } from "react-icons/fi";
 
 function NewPage() {
@@ -7,21 +7,9 @@ function NewPage() {
   const [messages, setMessages] = useState([]);
   const [editMessageId, setEditMessageId] = useState(null);
 
-  const handleTextChange = (e) => {
-    setText(e.target.value);
-  };
+  const textareaRef = useRef(null);
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
-    setAttachments((prev) => [...prev, ...files]);
-  };
+  const handleTextChange = (e) => setText(e.target.value);
 
   const handleSendMessage = () => {
     if (text.trim() === "" && attachments.length === 0) return;
@@ -29,7 +17,9 @@ function NewPage() {
     if (editMessageId !== null) {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === editMessageId ? { ...msg, text, attachments } : msg
+          msg.id === editMessageId
+            ? { ...msg, text, attachments } // update message text
+            : msg
         )
       );
       setEditMessageId(null);
@@ -39,29 +29,6 @@ function NewPage() {
 
     setText("");
     setAttachments([]);
-  };
-
-  const handleCancel = () => {
-    setText("");
-    setAttachments([]);
-    setEditMessageId(null);
-  };
-
-  const handleRemoveMessage = (id) => {
-    setMessages((prev) => prev.filter((msg) => msg.id !== id));
-  };
-
-  const handleDirectEdit = (id, newText) => {
-    setMessages((prev) =>
-      prev.map((msg) => (msg.id === id ? { ...msg, text: newText } : msg))
-    );
-  };
-
-  const autoResize = (textarea) => {
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
   };
 
   const renderAttachments = () => {
@@ -88,15 +55,19 @@ function NewPage() {
         key={msg.id}
         className="relative p-4 bg-gray-900 text-gray-200 rounded-lg mb-4 border border-gray-700 group"
       >
-        <textarea
-          value={msg.text}
-          onChange={(e) => handleDirectEdit(msg.id, e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) e.preventDefault();
-          }}
-          ref={(textarea) => autoResize(textarea)}
-          className="w-full bg-transparent text-gray-200 border-none focus:outline-none resize-none overflow-hidden"
-        ></textarea>
+        {editMessageId === msg.id ? (
+          <textarea
+            value={msg.text}
+            onChange={(e) => handleEditMessage(msg.id, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, msg.id)}
+            className="w-full bg-transparent text-gray-200 border-none focus:outline-none resize-none overflow-hidden"
+            autoFocus
+          />
+        ) : (
+          <div className="text-gray-200 leading-relaxed whitespace-pre-wrap">
+            {msg.text}
+          </div>
+        )}
 
         {msg.attachments.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
@@ -120,12 +91,14 @@ function NewPage() {
 
         {/* edit and remove icons */}
         <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={() => setEditMessageId(msg.id)}
-            className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
-          >
-            <FiEdit />
-          </button>
+          {editMessageId !== msg.id && (
+            <button
+              onClick={() => setEditMessageId(msg.id)}
+              className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
+            >
+              <FiEdit />
+            </button>
+          )}
           <button
             onClick={() => handleRemoveMessage(msg.id)}
             className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
@@ -137,6 +110,50 @@ function NewPage() {
     ));
   };
 
+  const handleRemoveMessage = (id) => {
+    setMessages((prev) => prev.filter((msg) => msg.id !== id));
+  };
+
+  const handleKeyDown = (e, id) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === id ? { ...msg, text: e.target.value } : msg
+        )
+      );
+      setEditMessageId(null);
+    }
+  };
+
+  const handleEditMessage = (id, newText) => {
+    setMessages((prev) =>
+      prev.map((msg) => (msg.id === id ? { ...msg, text: newText } : msg))
+    );
+  };
+
+  const autoResize = (textarea) => {
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
+
+  const handleEditorKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    } else if (e.key === "Enter" && e.shiftKey) {
+      setText((prevText) => prevText + "\n");
+    }
+  };
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      autoResize(textareaRef.current);
+    }
+  }, [text]);
+
   return (
     <div className="p-6 bg-gray-800 text-white min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-blue-400">New Page</h1>
@@ -146,9 +163,10 @@ function NewPage() {
         <textarea
           value={text}
           onChange={handleTextChange}
-          onKeyDown={handleKeyDown}
+          onKeyDown={handleEditorKeyDown}
           placeholder="Type your notes here..."
-          className="w-full h-32 p-2 bg-transparent text-gray-200 border-none focus:outline-none resize-none"
+          className="w-full p-2 bg-transparent text-gray-200 border-none focus:outline-none resize-none"
+          ref={textareaRef}
         ></textarea>
 
         {/* anexos */}
@@ -161,13 +179,15 @@ function NewPage() {
             <input
               type="file"
               multiple
-              onChange={handleFileUpload}
+              onChange={(e) =>
+                setAttachments([...attachments, ...e.target.files])
+              }
               className="hidden"
             />
           </label>
           <div className="flex space-x-2">
             <button
-              onClick={handleCancel}
+              onClick={() => setText("")}
               className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700"
             >
               Cancel
