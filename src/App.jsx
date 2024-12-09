@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import TaskManager from "./components/TaskManager";
 import NewPage from "./pages/NewPage";
 import TravelPlanning from "./pages/TravelPlanning";
+import WeeklyTasks from "./pages/WeeklyTasks";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/task-manager" element={<TaskManager />} />
             <Route path="/new-page" element={<NewPage />} />
             <Route path="/travel-planning" element={<TravelPlanning />} />
+            <Route path="/weekly-tasks" element={<WeeklyTasks />} />
           </Routes>
         </div>
       </div>
